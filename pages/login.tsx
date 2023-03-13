@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useFormik } from "formik";
 import loginvalid, { registerValidate } from "../lib/validate";
 import { useRouter } from "next/router";
+import ImageConvert from "../helper/ImageConvert";
 
 interface Values {
 	name: string;
@@ -18,6 +19,11 @@ export default function login() {
 	const [show, setShow]: any = useState(false);
 	const [passshow, setPassshow]: any = useState(false);
 	const router = useRouter();
+	const [file, setFile]: any = useState();
+	const profileUpload = async (e: any) => {
+		const imgUrl: any = await ImageConvert(e);
+		setFile(imgUrl);
+	};
 	const formik = useFormik({
 		initialValues: {
 			email: "",
@@ -45,6 +51,7 @@ export default function login() {
 		},
 		validate: registerValidate,
 		onSubmit: async (values) => {
+			values = await Object.assign(values, { image: file || "" });
 			const option = {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -71,22 +78,24 @@ export default function login() {
 	return (
 		<>
 			<div className="overflow-hidden w-[100vw] h-[100vh]">
-				<div className="bg-[#EFEFEF] w-full h-full grid lg:grid-cols-2 ">
-					<div className="m-auto">
+				<div className="bg-[#f5f5f5] w-full h-full grid lg:grid-cols-2 ">
+					<div className="m-auto space-y-6">
 						<Image
 							src="/brand.png"
 							width={350}
 							height={120}
 							alt="facebook icon"
 						/>
-						<p className="max-w-[37rem] text-xl h-16 ml-10 md:text-3xl">
-							Facebook helps you connect and share with the people in your life.
+						<p className="max-w-[37rem] text-xl h-16 md:text-3xl">
+							Building Bridges, Not Walls.
+							<br />
+							Fill Gaps By Connecting The World's.
 						</p>
 					</div>
 					<div className="my-auto py-2">
 						<form
 							onSubmit={formik.handleSubmit}
-							className="md:w-2/3 bg-white m-auto space-y-4 rounded-lg p-8 shadow-xl"
+							className="md:w-2/3 bg-[#fff] m-auto space-y-4 rounded-lg p-8 shadow-xl"
 						>
 							<div>
 								<div className="relative mt-1 flex">
@@ -127,9 +136,9 @@ export default function login() {
 									{show && (
 										<div
 											role="alert"
-											className="rounded border-l-4 border-red-500 bg-red-50 p-1 absolute w-28 -right-32 top-2 "
+											className="rounded border-l-4 border-warn/50 bg-[#fff] p-1 absolute w-28 -right-32 top-2 "
 										>
-											<strong className="block font-medium text-xs text-red-700">
+											<strong className="block font-medium text-xs text-warn">
 												{" "}
 												Email-Id is not correct{" "}
 											</strong>
@@ -176,9 +185,9 @@ export default function login() {
 									{passshow && (
 										<div
 											role="alert"
-											className="rounded border-l-4 border-red-500 bg-red-50 p-1 absolute w-28 -right-32 top-2 "
+											className="rounded border-l-4 border-warn/50 bg-[#fff] p-1 absolute w-28 -right-32 top-2 "
 										>
-											<strong className="block font-medium text-xs text-red-700">
+											<strong className="block font-medium text-xs text-warn">
 												{" "}
 												Incorrect Password Format{" "}
 											</strong>
@@ -189,33 +198,35 @@ export default function login() {
 
 							<button
 								type="submit"
-								className="block w-full rounded-lg bg-[#149FFF] px-5 py-3 text-lg font-semibold text-white"
+								className="block w-full rounded-lg hover:bg-primary  px-5 py-3 text-lg font-semibold text-primary hover:text-light border-primary border-2 hover:border-[#fff]"
 							>
 								Log in
 							</button>
 
-							<p className="text-center w-full text-sm text-gray-500">
-								Don't have an acoount?
+							<div className="items-center justify-between flex w-full text-sm text-gray-500">
+								<p>Don't have an acoount?</p>
 								<button
-									className="font-semibold ml-16 text-[#149FFF]"
+									className="font-semibold ml-16 text-primary"
 									type="button"
 									onClick={() => setPopup(!popup)}
 								>
 									Register
 								</button>
-							</p>
+							</div>
 							<button
 								type="button"
 								onClick={handleGoogleAuth}
-								className="block w-full rounded-lg px-5 py-3 text-lg border-black border-2 font-semibold text-black"
+								className="w-full rounded-lg px-5 py-3 text-lg border-2 item-center flex justify-evenly font-semibold text-black"
 							>
+								<Image src="/google.png" alt="google" width={30} height={30} />
 								Sign in With Google
 							</button>
 							<button
 								type="button"
 								onClick={handleGithubAuth}
-								className="block w-full rounded-lg px-5 py-3 text-lg border-black border-2 font-semibold text-black"
+								className="w-full rounded-lg px-5 py-3 text-lg item-center flex justify-evenly border-2 font-semibold text-black"
 							>
+								<Image src="/github.png" alt="github" width={30} height={30} />
 								Sign in With Github
 							</button>
 						</form>
@@ -249,6 +260,23 @@ export default function login() {
 							className="w-fit sm:h-fit shadow-2xl mx-auto my-40 rounded-xl bg-white m-auto p-4 xl:p-3 grid grid-cols-6 gap-6"
 						>
 							<div className="col-span-6">
+								<label htmlFor="profile">
+									<Image
+										src={file || "/avatar.png"}
+										width={100}
+										height={100}
+										className="rounded-full mx-auto p-2"
+										alt="Profile"
+									/>
+								</label>
+								<input
+									type="file"
+									onChange={(e: any) => profileUpload(e.target.files[0])}
+									hidden
+									name="profile"
+									id="profile"
+									required
+								/>
 								<label
 									htmlFor="Name"
 									className="block text-sm font-medium text-gray-700"
@@ -431,11 +459,12 @@ export default function login() {
 							<div className="col-span-6">
 								<p className="text-sm text-gray-500">
 									By creating an account, you agree to our
-									<a href="#" className="text-[#149FFF] underline">
-										terms and conditions
+									<a href="#" className="text-primary underline">
+										terms and conditions{" "}
 									</a>
 									and
-									<a href="#" className="text-[#149FFF] underline">
+									<a href="#" className="text-primary underline">
+										{" "}
 										privacy policy
 									</a>
 									.
@@ -443,17 +472,9 @@ export default function login() {
 							</div>
 
 							<div className="col-span-6 sm:flex sm:items-center sm:gap-4">
-								<button className="inline-block shrink-0 rounded-md border border-[#149FFF] bg-[#149FFF] px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-[#149FFF] focus:outline-none focus:ring active:text-[#149FFF]/80">
+								<button className="inline-block w-full shrink-0 rounded-md border border-primary bg-primary px-12 py-3 text-sm font-medium text-light transition hover:bg-light hover:text-primary focus:outline-none focus:ring active:text-primary/80">
 									Create an account
 								</button>
-
-								<p className="mt-4 text-sm text-gray-500 sm:mt-0">
-									Already have an account?
-									<a href="#" className="text-[#149FFF] underline">
-										Log in
-									</a>
-									.
-								</p>
 							</div>
 						</form>
 					</div>

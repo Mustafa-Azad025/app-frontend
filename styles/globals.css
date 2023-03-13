@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+	background: url("../public/1673959533092.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}

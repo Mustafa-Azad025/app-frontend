@@ -22,7 +22,7 @@
 		"pages/api/auth/[...nextauth].js",
 		"lib/validate.js",
 		"database/connect.js",
-		"components/Feed/InputBox.tsx"
+		"components/Home/Feed/InputBox.tsx"
 	],
 	"exclude": ["node_modules"]
 }
