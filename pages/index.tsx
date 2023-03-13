@@ -1,12 +1,12 @@
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
-import Header from "../components/Header";
 import { useSession, getSession } from "next-auth/react";
 import { fetchNav } from "./../response/index";
 import { IFacebookCollections, INav } from "../types";
 import { AxiosResponse } from "axios";
-import Sidebar from "./../components/Sidebar";
-import Feed from "../components/Feed";
+import Feed from "../components/Home/Feed";
+import SideHeader from "../components/Header/SideHeader";
+import HomePage from "./../components/Home/HomePage";
 
 interface IpropsType {
 	navbar: {
@@ -16,22 +16,23 @@ interface IpropsType {
 	image: string;
 }
 
-const Home: NextPage<IpropsType> = ({ navbar }) => {
+// const Home: NextPage<IpropsType> = ({ navbar }) => {
+const Home: NextPage<IpropsType> = () => {
 	const { data: session } = useSession();
-
 	return (
 		<>
 			<Head>
-				<title>Facebook Clone</title>
+				<title>PostR</title>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			{session ? (
 				<>
-					<Header />
-					<main className="flex overflow-hidden bg-slate-50">
-						<Sidebar />
+					<div className="flex overflow-hidden">
+						<SideHeader>
+							<HomePage />
+						</SideHeader>
 						<Feed />
-					</main>
+					</div>
 				</>
 			) : (
 				<>
@@ -46,8 +47,8 @@ const Home: NextPage<IpropsType> = ({ navbar }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-	const { data: navbar }: AxiosResponse<IFacebookCollections<INav[]>> =
-		await fetchNav();
+	// const { data: navbar }: AxiosResponse<IFacebookCollections<INav[]>> =
+	// 	await fetchNav();
 	const session = await getSession({ req });
 
 	if (!session) {
@@ -61,9 +62,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 	return {
 		props: {
 			session,
-			navbar: {
-				items: navbar.data,
-			},
+			// navbar: {
+			// 	items: navbar.data,
+			// },
 		},
 	};
 };

@@ -40,6 +40,6 @@ export const authOptions = {
 			},
 		}),
 	],
-	secret: "HgushgiuHIOHS%456432HGl112h",
+	secret: process.env.SECRET_KEY_FOR_AUTH,
 };
 export default NextAuth(authOptions);
